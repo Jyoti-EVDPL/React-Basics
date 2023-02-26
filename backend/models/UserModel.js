@@ -48,7 +48,16 @@ const User = sequelize.define("Admin-CRUD", {
     type: Sequelize.BOOLEAN,
     // allowNull: false,
   },
-  
+  role_id: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: "admin_role_tables",
+      key: "role_id"
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'SET NULL',
+  },
+
 });
 
 const Otps = sequelize.define("Admin-OTP", {
@@ -128,4 +137,4 @@ const Otps = sequelize.define("Admin-OTP", {
 // sequelize.sync({ alter: true });
 // console.log("All models were synchronized successfully.");
 
-module.exports = User,Otps;
+module.exports = User, Otps;
