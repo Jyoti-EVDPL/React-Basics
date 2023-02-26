@@ -448,7 +448,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"footerUK\",\r\n    \"title\": \"Contact us\",\r\n    \"description\": \"www.google.com/UK\"\r\n}",
+							"raw": "{\r\n    \"name\": \"footerLA\",\r\n    \"title\": \"Contact LA\",\r\n    \"description\": \"www.google.com/LA\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -493,11 +493,11 @@
 				{
 					"name": "Update Config",
 					"request": {
-						"method": "PATCH",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"config_id\": \"1\",\r\n    \"name\": \"footerIndia\",\r\n    \"title\": \"Contact us\",\r\n    \"description\": \"www.google.com/india\"\r\n}",
+							"raw": "{\r\n    \"config_id\": \"1\",\r\n    \"name\": \"footerIndia NEW\",\r\n    \"title\": \"Contact us\",\r\n    \"description\": \"www.google.com/india\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -522,7 +522,7 @@
 				{
 					"name": "Delete Config",
 					"request": {
-						"method": "DELETE",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -547,6 +547,180 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Section",
+			"item": [
+				{
+					"name": "UserRole",
+					"item": [
+						{
+							"name": "Admin/Role_Add",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"role_name\": \"promotional101\",\r\n    \"role_isactive\": true,\r\n    \"role_desc\": \"the one who manage all promotional emails\",\r\n    \"claim\": [\r\n        \"emailtemplate_view\",\r\n        \"emailtemplate_edit\",\r\n        \"emailtemplate_add\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/add_roles",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"add_roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "ROLE DATA MODULE DATA",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/modules",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"modules"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin/Role_View",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/view_roles",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"view_roles"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin/Claim_View",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"role_id\": \"11\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/view_claims",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"view_claims"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Admin/Role_Edit",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"role_id\": \"7\",\r\n    \"role_name\": \"email_manager\",\r\n    \"role_desc\": \"the one who manage all promotional emails\",\r\n    \"role_isactive\": true,\r\n    \"claim\": [\r\n        \"userlist_view\",\r\n        \"userlist_edit\",\r\n        \"userlist_add\",\r\n        \"userlist_delete\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/edit_roles",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"edit_roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Manage User",
+					"item": [
+						{
+							"name": "Admin/User_View",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"admin123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{SERVER_HOST}}/auth/home/admin/view_user",
+									"host": [
+										"{{SERVER_HOST}}"
+									],
+									"path": [
+										"auth",
+										"home",
+										"admin",
+										"view_user"
+									]
+								}
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		},
@@ -958,6 +1132,60 @@
 						"home",
 						"emailtemp",
 						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Location get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://extreme-ip-lookup.com/json/?key=6CScVQ07KPz2qmLqoNu7",
+					"protocol": "https",
+					"host": [
+						"extreme-ip-lookup",
+						"com"
+					],
+					"path": [
+						"json",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "6CScVQ07KPz2qmLqoNu7"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Location Set",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"businessName\": \"\",\r\n    \"businessWebsite\": \"\",\r\n    \"city\": \"Ahmedabad\",\r\n    \"continent\": \"Asia\",\r\n    \"country\": \"India\",\r\n    \"countryCode\": \"IN\",\r\n    \"ipName\": \"evincedev.com\",\r\n    \"ipType\": \"Residential\",\r\n    \"isp\": \"BlazeNet's Network\",\r\n    \"lat\": \"23.02579\",\r\n    \"lon\": \"72.58727\",\r\n    \"org\": \"BlazeNet's Network\",\r\n    \"query\": \"202.131.112.74\",\r\n    \"region\": \"Gujarat\",\r\n    \"status\": \"success\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{SERVER_HOST}}/auth//locationData",
+					"host": [
+						"{{SERVER_HOST}}"
+					],
+					"path": [
+						"auth",
+						"",
+						"locationData"
 					]
 				}
 			},

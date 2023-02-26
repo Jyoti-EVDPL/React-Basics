@@ -2,33 +2,60 @@
 const { CREATED } = require("http-status");
 const authServices = require("../services/authenticationService");
 
-const SignIn = async (res, req) => {
-    const { username, password } = res.body;
-    const token = await authServices.SignInProcess(username, password) //for manual testing
-    req.send({ token });
-    console.log(token);
-};
-
-const SignIn2FA = async (res, req) => {
-    const { username, password } = res.query;
-    const token = await authServices.verifyTwoFAProcess(username, password) //for manual testing
-    req.send({ token });
-    console.log(token);
-};
-
 // const SignUp = async (res, req) => {
 //     const { fullname, username, emailid, phnumber, DOB, country, state, city, pincode, password } = res.query;
 //     const token = await authServices.SignUpProcess(fullname, username, emailid, phnumber, DOB, country, state, city, pincode, password)
 //     req.send('Table CREATED');
 // };
-
+//SignUp Process
 const SignUp = async (res, req) => {
     const { fullname, username, emailid, phnumber, DOB, country, state, city, pincode, password } = res.body;
     const token = await authServices.SignUpProcess(fullname, username, emailid, phnumber, DOB, country, state, city, pincode, password)
     req.status(200);
     req.send({ message: 'User Registered' });
 };
-
+//SignIn Process
+const SignIn = async (res, req) => {
+    const { username, password } = res.body;
+    const signin_data = await authServices.SignInProcess(username, password) //for manual testing
+    req.send({ signin_data });
+    console.log(signin_data);
+};
+//forgot password
+const ForgotPassword = async (res, req) => {
+    const { username } = res.body;
+    const token = await authServices.ForgPassProcess(username)
+    req.send({ token });
+    console.log("kindly check your Email");
+};
+//submit password
+const SubmitPassword = async (res, req) => {
+    const { data } = res.body;
+    var authorization = req.headers.authorization.split(' ')[1], decoded;
+    decoded = jwt.verify(authorization, process.env.FPASS_PRIVATE_KEY);
+    console.log(decoded.V_username);
+    const token = await authServices.SubPassProcess(data)
+    req.send("Password changed successfully");
+};
+//----------------------------------------------------------------------------------------------->
+//2 factor generate otp
+const SignIn2FAgen = async (res, req) => {
+    console.log(res.body)
+    const twoFAtoken = res.body.token;
+    console.log(twoFAtoken)
+    const token = await authServices.verifyTwoFAUser(twoFAtoken) //for manual testing
+    req.send({ token });
+    console.log(token);
+};
+//2 factor submit otp
+const SignIn2FAsub = async (res, req) => {
+    const otp = res.body.otp;
+    const twoFAtoken = res.body.token;
+    const token = await authServices.verifyTwoFAProcess(otp, twoFAtoken) //for manual testing
+    req.send({ token });
+    console.log(token);
+};
+//----------------------------------------------------------------------------------------------->
 const Profile = async (res, req) => {
     const { username } = res.body;//for now i am not using any token here
     // console.log(username);
@@ -103,22 +130,130 @@ const AddUser = async (res, req) => {
     req.send('User Created');
 };
 
-const ForgotPassword = async (res, req) => {
+//----------------------------------------------------------------------------------------------------------------------------------------------
+//COMPLETE ADMIN PAGE---------------------------------------------------------------------------------------------------------------------------
+//..//User Management
+//User List
+const ViewUser = async (res, req) => {
     const { username } = res.body;
-    const token = await authServices.ForgPassProcess(username)
-    req.send({ token });
-    console.log("kindly check your Email");
+    console.log(username);
+    const data = await authServices.ViewUserProcess(username)
+    req.send({ data });
+    // req.send('User Created');
 };
-
-const SubmitPassword = async (res, req) => {
-    const { data } = res.body;
-    var authorization = req.headers.authorization.split(' ')[1], decoded;
-    decoded = jwt.verify(authorization, process.env.FPASS_PRIVATE_KEY);
-    console.log(decoded.V_username);
-    const token = await authServices.SubPassProcess(data)
-    req.send("Password changed successfully");
+//----------------------------------------------------------------------------------------------------------------------------------------------
+//USER ROLE MANAGEMENT TABLE
+const claimsData = [{
+    emailtemplate: [
+        { name: "emailtemplate_view", active: true },
+        { name: "emailtemplate_edit", active: true },
+        { name: "emailtemplate_add", active: true },
+        { name: "emailtemplate_delete", active: true },
+    ],
+    userlist: [
+        { name: "userlist_view", active: true },
+        { name: "userlist_edit", active: true },
+        { name: "userlist_add", active: true },
+        { name: "userlist_delete", active: true },
+    ],
+    configuration: [
+        { name: "configuration_view", active: true },
+        { name: "configuration_edit", active: true },
+        { name: "configuration_add", active: true },
+        { name: "configuration_delete", active: true },
+    ],
+    blog: [
+        { name: "blog_view", active: true },
+        { name: "blog_edit", active: true },
+        { name: "blog_add", active: true },
+        { name: "blog_delete", active: true },
+    ],
+}
+]
+const claimsDataOther = [
+    "emailtemplate",
+    "userlist",
+    "configuration",
+    "blog",
+]
+const claimsData2 = {
+    emailtemplate: ["emailtemplate_view", "emailtemplate_edit", "emailtemplate_add", "emailtemplate_delete"],
+    userlist: ["userlist_view", "userlist_edit", "userlist_add", "userlist_delete"],
+    configuration: ["configuration_view", "configuration_edit", "configuration_add", "configuration_delete"],
+    blog: ["blog_view", "blog_edit", "blog_add", "blog_delete"]
+}
+CLAIMS = [
+    "EmailTemplate_View",
+    "EmailTemplate_Add",
+    "EmailTemplate_Delete",
+    "EmailTemplate_Update",
+    "Place_View",
+    "Place_Add",
+    "Place_Delete",
+    "Place_Update",
+    "UserList_View",
+    "UserList_Add",
+    "UserList_Delete",
+    "UserList_Update",
+    "Config_View",
+    "Config_Add",
+    "Config_Delete",
+    "Config_Update",
+]
+//..//Role Management
+//Role Data
+const ViewModule = async (res, req) => {
+    // const { username } = res.body;
+    // console.log(username);
+    // const data = await authServices.ViewRoleProcess()
+    req.send(claimsData2);
+    req.status(200);
+    // req.send('User Created');
 };
-
+//Claim List
+const ViewClaim = async (res, req) => {
+    const { role_id } = res.body;
+    // console.log(username);
+    const data = await authServices.ViewClaimProcess(role_id)
+    req.send(data);
+    req.status(200);
+    // req.send('User Created');
+};
+//Role List
+const ViewRole = async (res, req) => {
+    const { username } = res.body;
+    // console.log(username);
+    const data = await authServices.ViewRoleProcess()
+    req.send(data);
+    req.status(200);
+    // req.send('User Created');
+};
+//Role Add
+const AddRole = async (res, req) => {
+    const { role_name, role_isactive, role_desc, claim } = res.body;
+    console.log(role_name, role_isactive, role_desc, claim);
+    const data = await authServices.AddRoleProcess(role_name, role_isactive, role_desc, claim)
+    // req.send(data);
+    req.status(200);
+    req.send({ message: "Role Created" });
+};
+//Role Edit
+const EditRole = async (res, req) => {
+    const { role_id, role_name, role_isactive, role_desc, claim } = res.body;
+    console.log(role_id, role_name, role_isactive, role_desc, claim);
+    const data = await authServices.EditRoleProcess(role_id, role_name, role_isactive, role_desc, claim)
+    req.send(data);
+    req.status(200);
+    // req.send('User Created');
+};
+//Role Delete
+const DeleteRole = async (res, req) => {
+    const { username, role_id } = res.body;
+    const data = await authServices.DeleRoleProcess(username, role_id)
+    req.status(200);
+    // req.send({ message: 'Template Created' });
+    req.send(data);
+};
 //----------------------------------------------------------------------------------------------------------------------------------------------
 const SignInView = async (res, req) => {
     req.render('pages/signin', {})
@@ -136,27 +271,115 @@ const Homepage = async (res, req) => {
     res.send({ token });
 };
 //-------------------------------------------------------------------------------------------
+//To Add Template
+const AddTemp = async (res, req) => {
+    const { name, title, description } = res.body;
+    const data = await authServices.AddTempProcess(name, title, description)
+    req.status(200);
+    req.send({ message: 'Template Created' });
+    // req.send({ data });
+};
+//To view Template
+const ViewTemp = async (res, req) => {
+    const token = await authServices.ViewTempProcess();
+    // console.log(token)
+    req.send(token);
+    req.status(200);
+    // req.send({ message: 'Template Found SuccessFfully' });
+};
+const DeleTemp = async (res, req) => {
+    const { username, id } = res.body;
+    const data = await authServices.DeleTempProcess(username, id)
+    req.status(200);
+    // req.send({ message: 'Template Created' });
+    req.send(data);
+};
+//-------------------------------------------------------------------------------------------
+//Configuration (Add)
+const AddConfig = async (res, req) => {
+    const { name, title, description } = res.body;
+    const data = await authServices.AddConfigProcess(name, title, description)
+    req.status(200);
+    req.send({ message: 'Configuration Created' });
+    // req.send({ data });
+};
+//Configuration (View)
+const ViewConfig = async (res, req) => {
+    const token = await authServices.ViewConfigProcess();
+    // console.log(token)
+    req.send(token);
+    req.status(200);
+    // req.send({ message: 'Template Found SuccessFfully' });
+};
+//Configuration (Update)
+const UpdateConfig = async (res, req) => {
+    const { name, title, description, config_id } = res.body;
+    const data = await authServices.UpdateConfigProcess(name, title, description, config_id)
+    req.status(200);
+    // req.send({ message: 'Template Created' });
+    req.send(data);
+};
+//Configuration (Delete)
+const DeleConfig = async (res, req) => {
+    const { username, config_id } = res.body;
+    const data = await authServices.DeleConfigProcess(username, config_id)
+    req.status(200);
+    // req.send({ message: 'Template Created' });
+    req.send(data);
+};
+//-------------------------------------------------------------------------------------------
+
 
 //DEMO-------------------
 const SignIn2 = async (res, req, next) => {
     console.log("hyy");
 };
+const LocationData = async (res, req) => {
+    const { businessName, businessWebsite, city, continent, country, countryCode, ipName, ipType, isp, lat, lon, org, query, region, status } = res.body;
+    // const ldata = res.body;
+    console.log(businessName);
+    const data = await authServices.AddLocationProcess(businessName, businessWebsite, city, continent, country, countryCode, ipName, ipType, isp, lat, lon, org, query, region, status)
+    req.status(200);
+    req.send({ message: 'data saved' });
+    // req.send({ data });
+};
 
 module.exports = {
     SignIn,
-    SignIn2FA,
     SignUp,
+    SignIn2FAgen,
+    SignIn2FAsub,
     Profile,
     UpdateProfile,
     UploadProfilePic,
     DeleteProf,
     DeleteUser,
     AddUser,
+    //----------------------------------------------------------------------------------------------------------------------------------------------
+    //COMPLETE ADMIN PAGE
+    //..//User Management
+    ViewUser,
+    //..//User Management
+    ViewModule,
+    ViewRole,
+    ViewClaim,
+    AddRole,
+    EditRole,
+    DeleteRole,
+
     SignInView,
     Homepage,
     ForgotPassword,
     SignIn2,
     SubmitPassword,
+    AddTemp,
+    ViewTemp,
+    DeleTemp,
+    AddConfig,
+    ViewConfig,
+    UpdateConfig,
+    DeleConfig,
+    LocationData,
 }
 //old ones not working yet
 // const ForgotPassword2 = async (res, req) => {
